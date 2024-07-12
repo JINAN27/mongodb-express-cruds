@@ -1,22 +1,17 @@
-// config/mongodb.js
 const { MongoClient } = require('mongodb');
 
-const url = 'mongodb://localhost:27017'; // Periksa URL dan port
-const client = new MongoClient(url);
+const uri = "mongodb://appuser:apppassword@127.0.0.1:27017/eduwork?authSource=admin";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-let db;
-
-async function connect() {
+const connect = async () => {
     try {
         await client.connect();
-        console.log('Koneksi ke MongoDB berhasil');
-        db = client.db("eduwork"); // Ganti dengan nama basis data Anda
-    } catch (e) {
-        console.error('Gagal menghubungkan ke MongoDB:', e.message);
-        throw e; // Melempar kesalahan untuk ditangani di tempat pemanggilan
+        console.log('Connected to MongoDB');
+        return client;
+    } catch (error) {
+        console.error('Failed to connect to MongoDB:', error.message);
+        process.exit(1);
     }
-}
+};
 
-const getDb = () => db;
-
-module.exports = { connect, getDb };
+module.exports = { connect };

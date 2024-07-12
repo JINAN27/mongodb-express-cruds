@@ -1,5 +1,16 @@
-const moongse = require('mongoose');
-mongoose.connect('mongodb://berkuasa:1234567@localhost:27017/eduwork-moongse?authSource=admin');
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log ('server terhubung') );
+const mongoose = require('mongoose');
+
+const connectDB = async () => {
+    try {
+        await mongoose.connect('mongodb://appuser:apppassword@127.0.0.1:27017/eduwork?authSource=admin', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('Server terhubung ke database');
+    } catch (error) {
+        console.error('Koneksi ke database gagal:', error);
+        process.exit(1); 
+    }
+};
+
+module.exports = connectDB;

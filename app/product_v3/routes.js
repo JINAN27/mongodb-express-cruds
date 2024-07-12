@@ -1,23 +1,61 @@
 const router = require('express').Router();
-const multer = require('multer');
 const Product = require('./model');
-const upload = multer({dest: 'uploads'});
-const product = require('./model');
-
-router.post('/product', upload.single('image'), (req, res) => {
-    const {name, price, stock, status} = req.body;
-    const image = req.files;
-    if(image) {
-        const target = path.join(_dirname, '../../uploads', image.originalName);
-        fs.renameSync(image.path, target);
-        Product.create({name, price, stock, status, image_url: 'http://localhost:3080/public${image.originalname'})
-        .then(result => res.send(result))
-        .catch(error => res.send(error));
 
 
-    }
+router.get('/', (req, res) => {
+    Product.find()
+        .then(products => res.json(products))
+        .catch(error => res.status(400).json({ error: error.message }));
+});
 
-}
-);
+
+router.get('/:id', (req, res) => {
+    const { id } = req.params;
+    Product.findById(id)
+        .then(product => {
+            if (!product) {
+                return res.status(404).json({ error: 'Product not found' });
+            }
+            res.json(product);
+        })
+        .catch(error => res.status(400).json({ error: error.message }));
+});
+
+router.post('/', (req, res) => {
+    const { name, price, stock, status, imageUrl } = req.body;
+
+    Product.create({ name, price, stock, status, imageUrl })
+        .then(product => res.status(201).json(product))
+        .catch(error => res.status(400).json({ error: error.message }));
+});
+
+
+router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, price, stock, status, imageUrl } = req.body;
+
+    Product.findByIdAndUpdate(id, { name, price, stock, status, imageUrl }, { new: true })
+        .then(updatedProduct => {
+            if (!updatedProduct) {
+                return res.status(404).json({ error: 'Product not found' });
+            }
+            res.json(updatedProduct);
+        })
+        .catch(error => res.status(400).json({ error: error.message }));
+});
+
+
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+
+    Product.findByIdAndDelete(id)
+        .then(deletedProduct => {
+            if (!deletedProduct) {
+                return res.status(404).json({ error: 'Product not found' });
+            }
+            res.json({ message: 'Product deleted successfully' });
+        })
+        .catch(error => res.status(400).json({ error: error.message }));
+});
 
 module.exports = router;

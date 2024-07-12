@@ -1,10 +1,20 @@
-const router = require('express').router;
+const router = require('express').Router();
 const multer = require('multer');
-const upload = multer({dest: 'uploads'});
+const upload = multer({ dest: 'uploads' });
 const productController = require('./controller');
 
-router.get('/product', productController.index);
-router.get('/product/:id', productController.index);
-router.post('/product', upload.single('image'), productController.store)
+const mongodb = require('../config/mongodb');
+mongodb.connect().then((client) => {
+    const db = client.db('eduwork');
+    productController.setDB(db);
+}).catch(err => {
+    console.error('Gagal menghubungkan ke MongoDB:', err.message);
+});
 
-module.exports = router
+router.get('/products', productController.index);
+router.get('/products/:id', productController.view);
+router.post('/products', upload.single('image'), productController.store);
+router.put('/products/:id', upload.single('image'), productController.update);
+router.delete('/products/:id', productController.destroy);
+
+module.exports = router;

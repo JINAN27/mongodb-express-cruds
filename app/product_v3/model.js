@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const productSchema = mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'field nama harus ada'],
-        minlength:3,
+        required: [true, 'Nama produk harus diisi'],
+        minlength: 3,
         maxlength: 50
     },
     price: {
@@ -18,11 +18,11 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         default: true
     },
-
-    image_url: {
+    imageUrl: {
         type: String
     }
 });
 
 const Product = mongoose.model('Product', productSchema);
-module.exports = Product; 
+
+module.exports = Product;
